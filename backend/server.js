@@ -1,35 +1,72 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config(); // .env file se variables load karne ke liye
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+require('dotenv').config(); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
-app.use(cors()); // Frontend ko allow karne ke liye
-app.use(express.json()); // JSON data parse karne ke liye
+app.use(cors()); 
+app.use(express.json()); 
 
-// Basic test route
+// Gemini API Setup
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 app.get('/', (req, res) => {
     res.send('DSA Optimizer API is running...');
 });
 
-// Endpoint jahan frontend se code aayega
-app.post('/api/optimize', (req, res) => {
+// Endpoint for Code Optimization
+app.post('/api/optimize', async (req, res) => {
     const { code, language } = req.body;
 
-    console.log(`Received ${language} code:\n`, code);
+    // Agar editor khali hai ya code nahi aaya
+    if (!code) {
+        return res.status(400).json({ success: false, message: "Code cannot be empty!" });
+    }
 
-    // Abhi ke liye hum sirf ek success message bhej rahe hain
-    // Aage chal kar yahan Gemini API ya Code Execution logic aayega
-    res.json({
-        success: true,
-        message: "Code backend par successfully receive ho gaya!",
-        receivedCodeLength: code.length
-    });
+    try {
+        console.log(`Analyzing ${language} code...`);
+
+        // Gemini Model Initialize karna
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // Prompt Engineering: AI ko batana hai ki use kya aur kaise respond karna hai
+        const prompt = `
+        You are an expert Data Structures and Algorithms (DSA) mentor.
+        Analyze the following ${language} code and provide the output strictly in this format:
+
+        **1. Time Complexity:** Explain the Big-O time complexity.
+        **2. Space Complexity:** Explain the Big-O space complexity.
+        **3. Optimization Suggestions:** If the code can be optimized (e.g., from O(N^2) to O(N log N)), provide the logic. If it is already optimal, mention that.
+        
+        Do not provide the full rewritten code yet, just the explanation.
+        
+        Code:
+        ${code}
+        `;
+
+        // AI se response generate karwana
+        const result = await model.generateContent(prompt);
+        const aiResponse = result.response.text();
+
+        console.log("AI Analysis Complete!");
+
+        // Frontend ko AI ka analysis bhejna
+        res.json({
+            success: true,
+            analysis: aiResponse
+        });
+
+    } catch (error) {
+        console.error("Error with Gemini API:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Failed to analyze code due to server error." 
+        });
+    }
 });
 
-// Server start karna
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

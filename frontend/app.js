@@ -43,6 +43,12 @@ async function runCode() {
         const data = await response.json();
         
         console.log("Backend Response:", data);
+        // Data mein ab analysis aayega
+        if(data.success) {
+          alert("AI Analysis:\n\n" + data.analysis);
+        } else {
+          alert("Error: " + data.message);
+        }   
         alert(data.message); 
 
     } catch (error) {
