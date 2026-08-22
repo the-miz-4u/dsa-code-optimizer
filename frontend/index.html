@@ -13,8 +13,43 @@
         <button id="run-btn" onclick="runCode()">Run & Optimize</button>
     </div>
 
-    <!-- Ye div hamara code editor banega -->
-    <div id="editor-container"></div>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Code Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Markdown to HTML Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    
+    <div class="header">
+        <h2>🚀 Real-Time DSA Optimizer</h2>
+        <button id="run-btn" onclick="runCode()">Run & Optimize</button>
+    </div>
+
+    <!-- Main Container for Split Screen -->
+    <div class="main-container">
+        <!-- Left Side: Editor -->
+        <div id="editor-container"></div>
+        
+        <!-- Right Side: Output Panel -->
+        <div id="result-panel">
+            <h3>🤖 AI Analysis Result</h3>
+            <div id="ai-response-content">
+                Code run karein aur AI ka optimization analysis yahan dekhein...
+            </div>
+        </div>
+    </div>
+
+    <!-- Monaco Editor Loaders -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
 
     <!-- Monaco Editor AMD Loader CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
