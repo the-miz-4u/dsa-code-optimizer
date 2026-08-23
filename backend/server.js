@@ -29,7 +29,9 @@ app.post('/api/optimize', async (req, res) => {
         console.log(`Analyzing ${language} code...`);
 
         // Gemini Model Initialize karna
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        
+        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" }); 
+        // Note: Agar 'gemini-1.5-pro' bhi 404 de, toh 'gemini-pro' try karna.
 
         // Prompt Engineering: AI ko batana hai ki use kya aur kaise respond karna hai
         const prompt = `
