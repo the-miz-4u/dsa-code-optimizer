@@ -39,7 +39,19 @@ async function runCode() {
         const data = await response.json();
         
         if (data.success) {
-            // marked.parse() AI ke raw markdown ko beautiful HTML me convert kar dega
+            // 1. Execution Output Dikhana
+            const execOutputBox = document.getElementById('execution-output');
+            if (data.execution && data.execution.success) {
+                execOutputBox.innerHTML = data.execution.output || "Code executed successfully, but no output was printed.";
+                execOutputBox.style.color = "#00ff00"; // Green for success
+            } else if (data.execution && !data.execution.success) {
+                execOutputBox.innerHTML = data.execution.output || "Execution failed!";
+                execOutputBox.style.color = "#ff4c4c"; // Red for errors
+            } else {
+                execOutputBox.innerHTML = "Execution data not found.";
+            }
+
+            // 2. AI Analysis Dikhana (Markdown to HTML)
             responseContent.innerHTML = marked.parse(data.analysis);
         } else {
             responseContent.innerHTML = `<p style="color: #f44336;">Error: ${data.message}</p>`;

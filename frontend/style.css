@@ -38,6 +38,19 @@ body {
     width: 100%;
     height: calc(100vh - 65px); /* Header ki height minus karke bachi hui screen */
 }
+/* Execution Output Terminal Style */
+.terminal-box {
+    background-color: #000000;
+    color: #00ff00; /* Hacker green color */
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    white-space: pre-wrap; /* Spaces aur naye lines ko preserve karne ke liye */
+    font-size: 14px;
+    margin-bottom: 20px;
+    min-height: 50px;
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -76,3 +89,4 @@ body {
 
 </body>
 </html>
+
