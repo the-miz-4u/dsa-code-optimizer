@@ -1,3 +1,4 @@
+/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -6,38 +7,99 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e1e;
-    color: white;
+    background-color: #1e1e1e; /* VS Code dark theme jaisa background */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* Screen se bahar na jaye */
 }
 
+/* Header Styling */
 .header {
+    background-color: #2d2d2d;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background-color: #252526;
-    border-bottom: 1px solid #333;
+    border-bottom: 2px solid #3e3e42;
 }
 
+.header h2 {
+    font-size: 20px;
+    color: #e0e0e0;
+}
+
+/* Language Dropdown Styling */
+#language-select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    margin-right: 15px;
+    margin-left: auto; /* Button aur dropdown ko right mein push karega */
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#language-select:focus {
+    border-color: #007acc;
+}
+
+/* Run Button Styling */
 #run-btn {
-    padding: 8px 16px;
     background-color: #007acc;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
     font-weight: bold;
-    transition: 0.3s;
 }
 
 #run-btn:hover {
-    background-color: #005999;
+    background-color: #005f9e;
 }
 
-#editor-container {
-    width: 100%;
-    height: calc(100vh - 65px); /* Header ki height minus karke bachi hui screen */
+#run-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
 }
+
+/* Main Container (Flexbox for Split Screen) */
+.main-container {
+    display: flex;
+    flex: 1; /* Bachi hui poori height le lega */
+    overflow: hidden;
+}
+
+/* Left Side (Editor) */
+#editor-container {
+    flex: 0 0 60%; /* Editor ko 60% width mili hai */
+    border-right: 2px solid #3e3e42;
+}
+
+/* Right Side (Output & AI Panel) */
+#result-panel {
+    flex: 1; /* Result ko baaki ki 40% width mili hai */
+    padding: 20px;
+    background-color: #252526;
+    overflow-y: auto; /* Agar result lamba ho toh scroll aa jayega */
+}
+
+#result-panel h3 {
+    color: #4fc1ff;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 1px solid #3e3e42;
+    padding-bottom: 5px;
+}
+
 /* Execution Output Terminal Style */
 .terminal-box {
     background-color: #000000;
@@ -46,47 +108,21 @@ body {
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #333;
-    white-space: pre-wrap; /* Spaces aur naye lines ko preserve karne ke liye */
+    white-space: pre-wrap; /* Spaces aur new lines ko exactly waisa hi dikhayega */
     font-size: 14px;
     margin-bottom: 20px;
-    min-height: 50px;
+    min-height: 60px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Code Optimizer</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Markdown to HTML Parser -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
-<body>
-    
-    <div class="header">
-        <h2>🚀 Real-Time DSA Optimizer</h2>
-        <button id="run-btn" onclick="runCode()">Run & Optimize</button>
-    </div>
+/* AI Analysis Content Formatting */
+#ai-response-content {
+    line-height: 1.6;
+    font-size: 15px;
+    color: #cccccc;
+}
 
-    <!-- Main Container for Split Screen -->
-    <div class="main-container">
-        <!-- Left Side: Editor -->
-        <div id="editor-container"></div>
-        
-        <!-- Right Side: Output Panel -->
-        <div id="result-panel">
-            <h3>🤖 AI Analysis Result</h3>
-            <div id="ai-response-content">
-                Code run karein aur AI ka optimization analysis yahan dekhein...
-            </div>
-        </div>
-    </div>
-
-    <!-- Monaco Editor Loaders -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
-    <script src="app.js"></script>
-
-</body>
-</html>
-
+#ai-response-content strong {
+    color: #ffffff;
+}

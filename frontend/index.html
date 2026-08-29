@@ -5,61 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSA Code Optimizer</title>
     <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    
-    <div class="header">
-        <h2>🚀 Real-Time DSA Optimizer</h2>
-        <button id="run-btn" onclick="runCode()">Run & Optimize</button>
-    </div>
-
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Code Optimizer</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Markdown to HTML Parser -->
+    <!-- Markdown Parser (AI ki bold/headings format karne ke liye) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    
+
+    <!-- Header Section -->
     <div class="header">
         <h2>🚀 Real-Time DSA Optimizer</h2>
+        
+        <!-- Language Selector Dropdown -->
+        <select id="language-select" onchange="changeLanguage()">
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="python">Python</option>
+        </select>
+
         <button id="run-btn" onclick="runCode()">Run & Optimize</button>
     </div>
 
-    <!-- Main Container for Split Screen -->
+    <!-- Main Layout (Split Screen 60-40) -->
     <div class="main-container">
-        <!-- Left Side: Editor -->
-        <div id="editor-container"></div>
         
-        <!-- Right Side: Output Panel -->
+        <!-- Left Side: Monaco Editor -->
+        <div id="editor-container"></div>
+
+        <!-- Right Side: Output & AI Analysis -->
         <div id="result-panel">
             <h3>💻 Execution Output</h3>
-            <!-- Code ka output yahan aayega -->
+            
+            <!-- Terminal Jaisa Box Output ke liye -->
             <div id="execution-output" class="terminal-box">
                 Run your code to see the output here...
             </div>
 
             <h3 style="margin-top: 20px;">🤖 AI Analysis</h3>
+            
+            <!-- AI ka Optimization Feedback -->
             <div id="ai-response-content">
                 Code run karein aur AI ka optimization analysis yahan dekhein...
             </div>
         </div>
+        
+
     </div>
 
-    <!-- Monaco Editor Loaders -->
+    <!-- Monaco Editor Loader Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
+    
+    <!-- Hamari Main JavaScript File -->
     <script src="app.js"></script>
-
-</body>
-</html>
-
-    <!-- Monaco Editor AMD Loader CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
-    <script src="app.js"></script>
-
 </body>
 </html>
