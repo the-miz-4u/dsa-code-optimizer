@@ -20,32 +20,64 @@ app.get('/', (req, res) => {
     res.send('DSA Optimizer API is running...');
 });
 
-// Function to execute C++ code locally
-const executeCpp = (code) => {
+// Function to execute C++, Java, and Python code locally
+const executeCode = (code, language) => {
     return new Promise((resolve, reject) => {
-        // Unique file names taaki multiple requests mix na hon
-        const fileName = `temp_${Date.now()}.cpp`;
-        const filePath = path.join(__dirname, fileName);
-        const outPath = path.join(__dirname, `out_${Date.now()}.exe`); 
+        const timestamp = Date.now();
+        let filePath, command, cleanupDir;
 
-        // 1. Code ko file mein save karo
-        fs.writeFileSync(filePath, code);
-
-        // 2. g++ ka use karke compile aur run karo
-        const command = `g++ ${filePath} -o ${outPath} && ${outPath}`;
-        
-        exec(command, (error, stdout, stderr) => {
-            // 3. Temporary files delete karo (Clean up)
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-            if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
-
-            // 4. Output return karo
-            if (error) {
-                resolve({ success: false, output: stderr || error.message });
-            } else {
-                resolve({ success: true, output: stdout });
+        try {
+            if (language === 'cpp') {
+                const fileName = `temp_${timestamp}.cpp`;
+                const outName = `out_${timestamp}.exe`;
+                filePath = path.join(__dirname, fileName);
+                const outPath = path.join(__dirname, outName);
+                fs.writeFileSync(filePath, code);
+                command = `g++ ${filePath} -o ${outPath} && ${outPath}`;
+                
+                // Cleanup logic attached to the process
+                cleanupDir = () => {
+                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                    if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
+                };
+            } 
+            else if (language === 'python') {
+                const fileName = `temp_${timestamp}.py`;
+                filePath = path.join(__dirname, fileName);
+                fs.writeFileSync(filePath, code);
+                command = `python ${filePath}`; 
+                
+                cleanupDir = () => {
+                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                };
+            } 
+            else if (language === 'java') {
+                // Java needs the filename to match the public class (Main.java).
+                // We create a unique folder so multiple users don't overwrite Main.java
+                const dirPath = path.join(__dirname, `java_${timestamp}`);
+                fs.mkdirSync(dirPath);
+                filePath = path.join(dirPath, `Main.java`);
+                fs.writeFileSync(filePath, code);
+                command = `cd ${dirPath} && javac Main.java && java Main`;
+                
+                cleanupDir = () => {
+                    if (fs.existsSync(dirPath)) fs.rmSync(dirPath, { recursive: true, force: true });
+                };
             }
-        });
+
+            // Command execute karna
+            exec(command, (error, stdout, stderr) => {
+                cleanupDir(); // Execution ke baad kachra saaf karna
+                
+                if (error) {
+                    resolve({ success: false, output: stderr || error.message });
+                } else {
+                    resolve({ success: true, output: stdout });
+                }
+            });
+        } catch (err) {
+            resolve({ success: false, output: `Server setup error: ${err.message}` });
+        }
     });
 };
 
@@ -60,7 +92,7 @@ app.post('/api/optimize', async (req, res) => {
 
     try {
         console.log(`Executing ${language} code locally...`);
-        const executionResult = await executeCpp(code);
+        const executionResult = await executeCode(code, req.body.language);
 
         console.log(`Analyzing ${language} code...`);
 
