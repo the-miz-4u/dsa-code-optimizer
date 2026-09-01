@@ -12,14 +12,24 @@ const codeTemplates = {
 
 // 2. Editor ko initialize karna
 require(['vs/editor/editor.main'], function() {
+    // Check karna ki kya pehle se koi C++ code save hai
+    const savedCode = localStorage.getItem('dsa_code_cpp');
+
     myEditor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: codeTemplates['cpp'], // Default code C++ ka set hoga
+        value: savedCode || codeTemplates['cpp'], // Agar saved hai toh wo, warna default
         language: 'cpp',
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 16
     });
+
+    // Jaise hi user kuch type kare, usko turant LocalStorage mein save kar do
+    myEditor.onDidChangeModelContent(() => {
+        const currentLang = document.getElementById('language-select').value;
+        localStorage.setItem(`dsa_code_${currentLang}`, myEditor.getValue());
+    });
 });
+
 
 // 3. Dropdown change hone par yeh function chalega
 function changeLanguage() {
@@ -28,8 +38,11 @@ function changeLanguage() {
     // Monaco editor ki language (syntax highlighting) update karna
     monaco.editor.setModelLanguage(myEditor.getModel(), lang);
     
-    // Editor mein us language ka default code daalna
-    myEditor.setValue(codeTemplates[lang]);
+    // Us language ka saved code dhoondhna
+    const savedCode = localStorage.getItem(`dsa_code_${lang}`);
+    
+    // Editor mein saved code daalna, agar nahi hai toh default template daalna
+    myEditor.setValue(savedCode || codeTemplates[lang]);
 }
 
 // 4. Code ko backend par bhejkar execute aur AI se analyze karwana
