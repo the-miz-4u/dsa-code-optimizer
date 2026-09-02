@@ -126,3 +126,19 @@ body {
 #ai-response-content strong {
     color: #ffffff;
 }
+/* Footer Styling */
+.footer {
+    background-color: #1e1e1e;
+    color: #a0a0a0;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 14px;
+    border-top: 1px solid #3e3e42;
+    letter-spacing: 0.5px;
+    flex-shrink: 0; /* Taaki flexbox mein yeh dabe nahi */
+}
+
+.footer span {
+    color: #4fc1ff; /* Highlighter blue color naam ke liye */
+    font-weight: bold;
+}
