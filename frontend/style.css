@@ -142,3 +142,79 @@ body {
     color: #4fc1ff; /* Highlighter blue color naam ke liye */
     font-weight: bold;
 }
+
+/* Chat Container */
+.chat-container {
+    background-color: #1e1e1e;
+    border: 1px solid #3e3e42;
+    border-radius: 5px;
+    padding: 15px;
+    height: 250px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Chat Messages */
+.chat-message {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+/* AI Message Style */
+.ai-msg {
+    background-color: #2d2d30;
+    color: #e0e0e0;
+    align-self: flex-start;
+    border-left: 3px solid #4fc1ff;
+}
+
+/* User Message Style */
+.user-msg {
+    background-color: #007acc;
+    color: white;
+    align-self: flex-end;
+    border-right: 3px solid #005f9e;
+}
+
+/* Chat Input Area */
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+
+#chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+}
+
+#chat-input:focus {
+    border-color: #007acc;
+}
+
+#chat-send-btn {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#chat-send-btn:hover {
+    background-color: #005f9e;
+}

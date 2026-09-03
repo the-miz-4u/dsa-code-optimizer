@@ -23,34 +23,44 @@
 
         <button id="run-btn" onclick="runCode()">Run & Optimize</button>
     </div>
-
+    
     <!-- Main Layout (Split Screen 60-40) -->
     <div class="main-container">
         
         <!-- Left Side: Monaco Editor -->
         <div id="editor-container"></div>
 
-        <!-- Right Side: Output & AI Analysis -->
+        <!-- Right Side: Output, AI Analysis & Chat -->
         <div id="result-panel">
             <h3>💻 Execution Output</h3>
             
-            <!-- Terminal Jaisa Box Output ke liye -->
             <div id="execution-output" class="terminal-box">
                 Run your code to see the output here...
             </div>
 
             <h3 style="margin-top: 20px;">🤖 AI Analysis</h3>
             
-            <!-- AI ka Optimization Feedback -->
             <div id="ai-response-content">
                 Code run karein aur AI ka optimization analysis yahan dekhein...
             </div>
-        </div>
-        
 
-    </div>
+            <!-- CHAT SECTION YAHAN HONA CHAHIYE (result-panel ke ANDAR) -->
+            <hr style="border: 1px solid #3e3e42; margin: 25px 0;">
+            <h3>💬 AI Mentor Chat</h3>
+            
+            <div id="chat-box" class="chat-container">
+                <div class="chat-message ai-msg">
+                    <strong>AI Mentor:</strong> Hi! Main aapka AI Assistant hoon. Agar aapke code mein koi error hai ya logic samajhna hai, toh mujhse yahan poocho!
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask a question about your code..." onkeypress="handleChatEnter(event)">
+                <button id="chat-send-btn" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div> <!-- Result panel yahan end hoga -->
 
-    </div> <!-- Yeh main-container ka closing tag hai -->
+    </div> <!-- Main container yahan end hoga -->
 
     <!-- Professional Footer Section -->
     <div class="footer">
