@@ -135,6 +135,41 @@ app.post('/api/optimize', async (req, res) => {
         });
     }
 });
+// AI Mentor Chat Endpoint
+app.post('/api/chat', async (req, res) => {
+    const { code, question, language } = req.body;
+
+    if (!question) {
+        return res.status(400).json({ success: false, message: "Question is required." });
+    }
+
+    try {
+        console.log(`Received chat question: ${question}`);
+        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" }); 
+        
+        // AI ko context dena ki user kis code ke baare mein pooch raha hai
+        const prompt = `
+        You are an expert, friendly Data Structures and Algorithms (DSA) mentor.
+        The student is writing ${language} code. 
+        
+        Here is their current code:
+        ${code || "No code provided yet."}
+        
+        Student's Question: "${question}"
+        
+        Provide a helpful, encouraging, and concise response. Do not just give the direct answer or full code; guide them to understand the logic or fix the error. Use formatting (like bolding or inline code) where appropriate.
+        `;
+
+        const result = await model.generateContent(prompt);
+        const aiReply = result.response.text();
+
+        res.json({ success: true, reply: aiReply });
+    } catch (error) {
+        console.error("Chat API Error:", error);
+        res.status(500).json({ success: false, message: "Failed to get response from AI Mentor." });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

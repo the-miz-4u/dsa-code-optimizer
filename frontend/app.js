@@ -109,3 +109,67 @@ async function runCode() {
         runBtn.disabled = false;
     }
 }
+// 5. AI Mentor Chat Logic
+async function sendChatMessage() {
+    const inputField = document.getElementById('chat-input');
+    const question = inputField.value.trim();
+    const chatBox = document.getElementById('chat-box');
+    
+    if (!question) return;
+
+    // User ka message UI mein dikhana
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'chat-message user-msg';
+    userMsgDiv.innerHTML = `<strong>You:</strong> ${question}`;
+    chatBox.appendChild(userMsgDiv);
+    
+    // Input field clear karna aur scroll ko sabse neeche lana
+    inputField.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Current code aur language nikalna
+    const currentCode = myEditor ? myEditor.getValue() : "";
+    const selectedLang = document.getElementById('language-select').value;
+
+    try {
+        // Backend ko question bhejna
+        const response = await fetch('http://localhost:5000/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: currentCode, question: question, language: selectedLang })
+        });
+
+        const data = await response.json();
+
+        // AI ka reply UI mein dikhana
+        const aiMsgDiv = document.createElement('div');
+        aiMsgDiv.className = 'chat-message ai-msg';
+        
+        if (data.success) {
+            // marked.parse ka use kar rahe hain taaki AI ka bold/code format sahi se dikhe
+            aiMsgDiv.innerHTML = `<strong>AI Mentor:</strong><br/> ${marked.parse(data.reply)}`;
+        } else {
+            aiMsgDiv.innerHTML = `<strong>AI Mentor:</strong> Sorry, I encountered an error.`;
+            aiMsgDiv.style.borderLeftColor = "#f44336"; // Error ke liye red border
+        }
+        
+        chatBox.appendChild(aiMsgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Naya message aane par auto-scroll
+
+    } catch (error) {
+        console.error("Chat Error:", error);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'chat-message ai-msg';
+        errorDiv.style.borderLeftColor = "#f44336";
+        errorDiv.innerHTML = `<strong>AI Mentor:</strong> Server is not responding. Check if backend is running.`;
+        chatBox.appendChild(errorDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+}
+
+// Enter press karne par message send karna
+function handleChatEnter(event) {
+    if (event.key === 'Enter') {
+        sendChatMessage();
+    }
+}
