@@ -32,13 +32,21 @@
 
         <!-- Right Side: Output, AI Analysis & Chat -->
         <div id="result-panel">
-            <h3>💻 Execution Output</h3>
+            <!-- Execution Output Heading with Copy Button -->
+            <h3 style="display: flex; justify-content: space-between; align-items: center;">
+                <span>💻 Execution Output</span>
+                <button class="copy-btn" onclick="copyContent('execution-output', this)">Copy</button>
+            </h3>
             
             <div id="execution-output" class="terminal-box">
                 Run your code to see the output here...
             </div>
 
-            <h3 style="margin-top: 20px;">🤖 AI Analysis</h3>
+            <!-- AI Analysis Heading with Copy Button -->
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <span>🤖 AI Analysis</span>
+                <button class="copy-btn" onclick="copyContent('ai-response-content', this)">Copy</button>
+            </h3>
             
             <div id="ai-response-content">
                 Code run karein aur AI ka optimization analysis yahan dekhein...

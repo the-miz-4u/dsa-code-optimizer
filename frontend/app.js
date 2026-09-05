@@ -173,3 +173,31 @@ function handleChatEnter(event) {
         sendChatMessage();
     }
 }
+
+// 6. Copy Content Utility Function
+function copyContent(elementId, btnElement) {
+    // Us box ke andar ka text nikalna
+    const content = document.getElementById(elementId).innerText;
+    
+    // Clipboard API ka use karke text copy karna
+    navigator.clipboard.writeText(content).then(() => {
+        const originalText = btnElement.innerText;
+        
+        // Button ka text aur color change karna confirmation ke liye
+        btnElement.innerText = "Copied! ✅";
+        btnElement.style.backgroundColor = "#4caf50";
+        btnElement.style.color = "white";
+        btnElement.style.borderColor = "#4caf50";
+        
+        // 2 second baad button ko wapas normal kar dena
+        setTimeout(() => {
+            btnElement.innerText = originalText;
+            btnElement.style.backgroundColor = "";
+            btnElement.style.color = "";
+            btnElement.style.borderColor = "";
+        }, 2000);
+    }).catch(err => {
+        console.error("Failed to copy text: ", err);
+        alert("Copy failed. Please check browser permissions.");
+    });
+}
