@@ -201,3 +201,11 @@ function copyContent(elementId, btnElement) {
         alert("Copy failed. Please check browser permissions.");
     });
 }
+// 7. Keyboard Shortcut (Ctrl + Enter) to Run Code
+document.addEventListener('keydown', function(event) {
+    // Check agar Ctrl key aur Enter key ek sath press hui hain
+    if (event.ctrlKey && event.key === 'Enter') {
+        event.preventDefault(); // Default browser behaviour ko rokna
+        runCode(); // Hamara run & optimize function call karna
+    }
+});
