@@ -1,6 +1,8 @@
 # 🚀 Real-Time DSA Optimizer & AI Mentor
 
 A professional-grade, multi-language Data Structures and Algorithms (DSA) IDE with integrated Artificial Intelligence. Built to enhance coding practice, this platform not only executes C++, Java, and Python code locally but also provides real-time optimization feedback and interactive debugging through an AI Mentor powered by the Google Gemini API.
+![Real-Time DSA Optimizer UI](<img width="1898" height="1079" alt="image" src="https://github.com/user-attachments/assets/68a1b44c-8bc8-4503-b259-df169dc5e3ed" />)
+
 
 ## ✨ Key Features
 
