@@ -209,3 +209,32 @@ document.addEventListener('keydown', function(event) {
         runCode(); // Hamara run & optimize function call karna
     }
 });
+
+// 8. Download Code Function
+function downloadCode() {
+    const code = myEditor ? myEditor.getValue() : "";
+    if (!code.trim()) {
+        alert("Editor is empty! Write some code to download.");
+        return;
+    }
+
+    const selectedLang = document.getElementById('language-select').value;
+    let extension = "txt";
+    
+    if (selectedLang === "cpp") extension = "cpp";
+    else if (selectedLang === "java") extension = "java";
+    else if (selectedLang === "python") extension = "py";
+
+    // File banakar download karwana
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my_solution.${extension}`;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}

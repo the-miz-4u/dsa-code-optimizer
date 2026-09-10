@@ -10,19 +10,19 @@
 </head>
 <body>
 
-    <!-- Header Section -->
-    <div class="header">
-        <h2>🚀 Real-Time DSA Optimizer</h2>
-        
-        <!-- Language Selector Dropdown -->
-        <select id="language-select" onchange="changeLanguage()">
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="python">Python</option>
-        </select>
-
-        <button id="run-btn" onclick="runCode()">Run & Optimize</button>
-    </div>
+    <!-- Editor Controls -->
+            <div class="editor-header">
+                <select id="language-select" onchange="changeLanguage()">
+                    <option value="cpp">C++</option>
+                    <option value="java">Java</option>
+                    <option value="python">Python</option>
+                </select>
+                
+                <!-- Naya Download Button -->
+                <button id="download-btn" onclick="downloadCode()" style="margin-left: 10px;" class="secondary-btn">📥 Download Code</button>
+                
+                <button id="run-btn" onclick="runCode()">Run & Optimize</button>
+            </div>
     
     <!-- Main Layout (Split Screen 60-40) -->
     <div class="main-container">
