@@ -238,3 +238,11 @@ function downloadCode() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
+
+// 9. Auto-Format Code Function
+function formatCode() {
+    if (myEditor) {
+        // Monaco Editor ka inbuilt formatter action call karna
+        myEditor.getAction('editor.action.formatDocument').run();
+    }
+}
