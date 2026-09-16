@@ -18,9 +18,13 @@
                     <option value="python">Python</option>
                 </select>
                 
-                <!-- Naya Download Button -->
-                <button id="download-btn" onclick="downloadCode()" style="margin-left: 10px;" class="secondary-btn">📥 Download Code</button>
+                <button id="download-btn" onclick="downloadCode()" style="margin-left: 10px;" class="secondary-btn">📥 Download</button>
                 <button id="format-btn" onclick="formatCode()" style="margin-left: 10px;" class="secondary-btn">✨ Format</button>
+                
+                <!-- Naye Font Size Adjuster Buttons -->
+                <button onclick="changeFontSize(1)" style="margin-left: 10px; padding: 8px 10px;" class="secondary-btn">A+</button>
+                <button onclick="changeFontSize(-1)" style="margin-left: 5px; padding: 8px 10px;" class="secondary-btn">A-</button>
+                
                 <button id="run-btn" onclick="runCode()">Run & Optimize</button>
             </div>
     

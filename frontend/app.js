@@ -246,3 +246,19 @@ function formatCode() {
         myEditor.getAction('editor.action.formatDocument').run();
     }
 }
+
+// 10. Font Size Adjuster (Zoom In/Out)
+let currentFontSize = 14; // Default Monaco font size
+
+function changeFontSize(step) {
+    if (myEditor) {
+        currentFontSize += step;
+        
+        // Limits set kar rahe hain taaki font bohot chhota ya bohot bada na ho jaye
+        if (currentFontSize < 8) currentFontSize = 8;
+        if (currentFontSize > 40) currentFontSize = 40;
+        
+        // Editor ko naye font size ke sath update karna
+        myEditor.updateOptions({ fontSize: currentFontSize });
+    }
+}
