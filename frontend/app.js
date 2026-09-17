@@ -262,3 +262,23 @@ function changeFontSize(step) {
         myEditor.updateOptions({ fontSize: currentFontSize });
     }
 }
+
+// 11. Light/Dark Theme Switcher
+let isDarkMode = true;
+
+function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    const themeBtn = document.getElementById('theme-btn');
+    
+    if (isDarkMode) {
+        // Wapas Dark Mode
+        document.body.classList.remove('light-mode');
+        monaco.editor.setTheme('vs-dark'); // Monaco dark theme
+        themeBtn.innerText = '☀️';
+    } else {
+        // Light Mode ON
+        document.body.classList.add('light-mode');
+        monaco.editor.setTheme('vs'); // Monaco light theme
+        themeBtn.innerText = '🌙';
+    }
+}
