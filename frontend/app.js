@@ -282,3 +282,20 @@ function toggleTheme() {
         themeBtn.innerText = '🌙';
     }
 }
+
+// 12. Clear Output Function
+function clearOutput() {
+    // Apne output aur AI div ki exact IDs check kar lena agar alag ho toh
+    const outputScreen = document.getElementById('output'); 
+    const aiAnalysis = document.getElementById('ai-response'); // Ya jo bhi aapki AI output container ki ID hai
+    
+    if (outputScreen) {
+        outputScreen.innerHTML = "Output cleared. Ready for next execution...";
+        outputScreen.style.color = "#888"; // Optional: grey color for placeholder
+    }
+    
+    if (aiAnalysis) {
+        aiAnalysis.innerHTML = "AI Analysis cleared.";
+        aiAnalysis.style.color = "#888";
+    }
+}
