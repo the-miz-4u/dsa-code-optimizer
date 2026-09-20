@@ -32,17 +32,38 @@ require(['vs/editor/editor.main'], function() {
 
 
 // 3. Dropdown change hone par yeh function chalega
+const boilerplates = {
+    cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your code here\n    cout << "Hello World!" << endl;\n    return 0;\n}`,
+    java: `public class Main {\n    public static void main(String[] args) {\n        // Write your code here\n        System.out.println("Hello World!");\n    }\n}`,
+    python: `def main():\n    # Write your code here\n    print("Hello World!")\n\nif __name__ == "__main__":\n    main()`
+};
+
 function changeLanguage() {
     const lang = document.getElementById('language-select').value;
     
-    // Monaco editor ki language (syntax highlighting) update karna
-    monaco.editor.setModelLanguage(myEditor.getModel(), lang);
-    
-    // Us language ka saved code dhoondhna
-    const savedCode = localStorage.getItem(`dsa_code_${lang}`);
-    
-    // Editor mein saved code daalna, agar nahi hai toh default template daalna
-    myEditor.setValue(savedCode || codeTemplates[lang]);
+    if (myEditor) {
+        // 1. Monaco editor ki language highlight change karna
+        const model = myEditor.getModel();
+        monaco.editor.setModelLanguage(model, lang);
+        
+        // 2. Boilerplate generate karne ka logic
+        const currentCode = myEditor.getValue().trim();
+        const isCodeEmpty = currentCode === "";
+        
+        // Check karna ki kya current code kisi purane boilerplate se match karta hai
+        const isOldBoilerplate = Object.values(boilerplates).map(b => b.trim()).includes(currentCode);
+
+        if (isCodeEmpty || isOldBoilerplate) {
+            // Agar khali hai ya purana boilerplate hai, toh bina pooche naya daal do
+            myEditor.setValue(boilerplates[lang]);
+        } else {
+            // Agar user ne apna kuch custom code likha hai, toh permission lo
+            const confirmChange = confirm(`Load default template for ${lang.toUpperCase()}? This will erase your current code.`);
+            if (confirmChange) {
+                myEditor.setValue(boilerplates[lang]);
+            }
+        }
+    }
 }
 
 // 4. Code ko backend par bhejkar execute aur AI se analyze karwana
