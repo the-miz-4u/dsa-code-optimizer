@@ -1,22 +1,23 @@
-// 1. Monaco Editor ko CDN se load karne ki configuration
+// ==========================================
+// 1. Monaco Editor Initialization & Config
+// ==========================================
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
 
 let myEditor;
 
-// Default code templates for different languages
-const codeTemplates = {
-    cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, Optimization!" << endl;\n    return 0;\n}',
-    java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Optimization!");\n    }\n}',
-    python: 'print("Hello, Optimization!")'
+// Default code boilerplates for different languages
+const boilerplates = {
+    cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your code here\n    cout << "Hello World!" << endl;\n    return 0;\n}`,
+    java: `public class Main {\n    public static void main(String[] args) {\n        // Write your code here\n        System.out.println("Hello World!");\n    }\n}`,
+    python: `def main():\n    # Write your code here\n    print("Hello World!")\n\nif __name__ == "__main__":\n    main()`
 };
 
-// 2. Editor ko initialize karna
 require(['vs/editor/editor.main'], function() {
     // Check karna ki kya pehle se koi C++ code save hai
     const savedCode = localStorage.getItem('dsa_code_cpp');
 
     myEditor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: savedCode || codeTemplates['cpp'], // Agar saved hai toh wo, warna default
+        value: savedCode || boilerplates['cpp'], // Agar saved hai toh wo, warna default C++
         language: 'cpp',
         theme: 'vs-dark',
         automaticLayout: true,
@@ -31,13 +32,9 @@ require(['vs/editor/editor.main'], function() {
 });
 
 
-// 3. Dropdown change hone par yeh function chalega
-const boilerplates = {
-    cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your code here\n    cout << "Hello World!" << endl;\n    return 0;\n}`,
-    java: `public class Main {\n    public static void main(String[] args) {\n        // Write your code here\n        System.out.println("Hello World!");\n    }\n}`,
-    python: `def main():\n    # Write your code here\n    print("Hello World!")\n\nif __name__ == "__main__":\n    main()`
-};
-
+// ==========================================
+// 2. Language Change & Auto-Boilerplate
+// ==========================================
 function changeLanguage() {
     const lang = document.getElementById('language-select').value;
     
@@ -66,7 +63,10 @@ function changeLanguage() {
     }
 }
 
-// 4. Code ko backend par bhejkar execute aur AI se analyze karwana
+
+// ==========================================
+// 3. Run Code & AI Analysis (With Hint Mode)
+// ==========================================
 async function runCode() {
     if (!myEditor) {
         alert("Editor abhi load nahi hua hai. Please wait.");
@@ -74,17 +74,32 @@ async function runCode() {
     }
 
     const code = myEditor.getValue();
+    if (!code.trim()) {
+        alert("Please write some code first!");
+        return;
+    }
+
     const runBtn = document.getElementById('run-btn');
     const responseContent = document.getElementById('ai-response-content');
-    const execOutputBox = document.getElementById('execution-output');
-    
-    // Dropdown se selected language nikalna
+    const execOutputBox = document.getElementById('execution-output') || document.getElementById('output'); // Fallback ID
     const selectedLang = document.getElementById('language-select').value; 
     
+    // Hint Mode Checkbox Status
+    const hintModeCheckbox = document.getElementById('hint-mode');
+    const isHintMode = hintModeCheckbox ? hintModeCheckbox.checked : false;
+
+    // AI Prompt Setup (Hint Mode vs Full Solution)
+    let aiPrompt = "";
+    if (isHintMode) {
+        aiPrompt = `Act as an expert DSA Mentor. Analyze this code. Provide ONLY hints, logical approach, and Time/Space complexity. STRICT RULE: DO NOT provide the full code solution. Guide the user to solve it themselves.\n\nCode:\n${code}`;
+    } else {
+        aiPrompt = `Act as an expert DSA Mentor. Analyze this code. Provide the complete optimized code solution along with a detailed explanation of the logic and Time/Space complexity.\n\nCode:\n${code}`;
+    }
+
     // UI Loading state
     runBtn.innerText = "Processing...";
     runBtn.disabled = true;
-    responseContent.innerHTML = "<p><em>AI is analyzing your code... Please wait.</em></p>";
+    if(responseContent) responseContent.innerHTML = "<p><em>AI is analyzing your code... Please wait.</em></p>";
     
     if(execOutputBox) {
         execOutputBox.innerHTML = "Executing code...";
@@ -95,13 +110,17 @@ async function runCode() {
         const response = await fetch('http://localhost:5000/api/optimize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: code, language: selectedLang }) // Dynamic language bhej rahe hain
+            body: JSON.stringify({ 
+                code: code, 
+                language: selectedLang,
+                customPrompt: aiPrompt // Backend ko prompt bhej rahe hain
+            }) 
         });
 
         const data = await response.json();
         
         if (data.success) {
-            // 1. Execution Output Dikhana
+            // Execution Output Dikhana
             if (execOutputBox) {
                 if (data.execution && data.execution.success) {
                     execOutputBox.innerHTML = data.execution.output || "Code executed successfully, but no output was printed.";
@@ -114,23 +133,27 @@ async function runCode() {
                 }
             }
 
-            // 2. AI Analysis Dikhana (Markdown to HTML)
-            responseContent.innerHTML = marked.parse(data.analysis);
+            // AI Analysis Dikhana (Markdown to HTML)
+            if(responseContent) responseContent.innerHTML = marked.parse(data.analysis);
         } else {
-            responseContent.innerHTML = `<p style="color: #f44336;">Error: ${data.message}</p>`;
+            if(responseContent) responseContent.innerHTML = `<p style="color: #f44336;">Error: ${data.message}</p>`;
             if(execOutputBox) execOutputBox.innerHTML = "";
         }
 
     } catch (error) {
         console.error("Error connecting to backend:", error);
-        responseContent.innerHTML = `<p style="color: #f44336;">Backend se connect nahi ho paya. Kya server running hai?</p>`;
+        if(responseContent) responseContent.innerHTML = `<p style="color: #f44336;">Backend se connect nahi ho paya. Kya server running hai?</p>`;
         if(execOutputBox) execOutputBox.innerHTML = "Connection Error";
     } finally {
         runBtn.innerText = "Run & Optimize";
         runBtn.disabled = false;
     }
 }
-// 5. AI Mentor Chat Logic
+
+
+// ==========================================
+// 4. AI Mentor Chat Logic
+// ==========================================
 async function sendChatMessage() {
     const inputField = document.getElementById('chat-input');
     const question = inputField.value.trim();
@@ -138,22 +161,18 @@ async function sendChatMessage() {
     
     if (!question) return;
 
-    // User ka message UI mein dikhana
     const userMsgDiv = document.createElement('div');
     userMsgDiv.className = 'chat-message user-msg';
     userMsgDiv.innerHTML = `<strong>You:</strong> ${question}`;
     chatBox.appendChild(userMsgDiv);
     
-    // Input field clear karna aur scroll ko sabse neeche lana
     inputField.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Current code aur language nikalna
     const currentCode = myEditor ? myEditor.getValue() : "";
     const selectedLang = document.getElementById('language-select').value;
 
     try {
-        // Backend ko question bhejna
         const response = await fetch('http://localhost:5000/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -161,21 +180,18 @@ async function sendChatMessage() {
         });
 
         const data = await response.json();
-
-        // AI ka reply UI mein dikhana
         const aiMsgDiv = document.createElement('div');
         aiMsgDiv.className = 'chat-message ai-msg';
         
         if (data.success) {
-            // marked.parse ka use kar rahe hain taaki AI ka bold/code format sahi se dikhe
             aiMsgDiv.innerHTML = `<strong>AI Mentor:</strong><br/> ${marked.parse(data.reply)}`;
         } else {
             aiMsgDiv.innerHTML = `<strong>AI Mentor:</strong> Sorry, I encountered an error.`;
-            aiMsgDiv.style.borderLeftColor = "#f44336"; // Error ke liye red border
+            aiMsgDiv.style.borderLeftColor = "#f44336"; 
         }
         
         chatBox.appendChild(aiMsgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Naya message aane par auto-scroll
+        chatBox.scrollTop = chatBox.scrollHeight; 
 
     } catch (error) {
         console.error("Chat Error:", error);
@@ -188,29 +204,27 @@ async function sendChatMessage() {
     }
 }
 
-// Enter press karne par message send karna
 function handleChatEnter(event) {
     if (event.key === 'Enter') {
         sendChatMessage();
     }
 }
 
-// 6. Copy Content Utility Function
+
+// ==========================================
+// 5. Utility & UI Functions (Quick Wins)
+// ==========================================
+
+// Copy Content Box
 function copyContent(elementId, btnElement) {
-    // Us box ke andar ka text nikalna
     const content = document.getElementById(elementId).innerText;
-    
-    // Clipboard API ka use karke text copy karna
     navigator.clipboard.writeText(content).then(() => {
         const originalText = btnElement.innerText;
-        
-        // Button ka text aur color change karna confirmation ke liye
         btnElement.innerText = "Copied! ✅";
         btnElement.style.backgroundColor = "#4caf50";
         btnElement.style.color = "white";
         btnElement.style.borderColor = "#4caf50";
         
-        // 2 second baad button ko wapas normal kar dena
         setTimeout(() => {
             btnElement.innerText = originalText;
             btnElement.style.backgroundColor = "";
@@ -222,16 +236,16 @@ function copyContent(elementId, btnElement) {
         alert("Copy failed. Please check browser permissions.");
     });
 }
-// 7. Keyboard Shortcut (Ctrl + Enter) to Run Code
+
+// Keyboard Shortcut (Ctrl + Enter) to Run Code
 document.addEventListener('keydown', function(event) {
-    // Check agar Ctrl key aur Enter key ek sath press hui hain
     if (event.ctrlKey && event.key === 'Enter') {
-        event.preventDefault(); // Default browser behaviour ko rokna
-        runCode(); // Hamara run & optimize function call karna
+        event.preventDefault(); 
+        runCode(); 
     }
 });
 
-// 8. Download Code Function
+// Download Code File
 function downloadCode() {
     const code = myEditor ? myEditor.getValue() : "";
     if (!code.trim()) {
@@ -241,12 +255,10 @@ function downloadCode() {
 
     const selectedLang = document.getElementById('language-select').value;
     let extension = "txt";
-    
     if (selectedLang === "cpp") extension = "cpp";
     else if (selectedLang === "java") extension = "java";
     else if (selectedLang === "python") extension = "py";
 
-    // File banakar download karwana
     const blob = new Blob([code], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -255,64 +267,53 @@ function downloadCode() {
     document.body.appendChild(a);
     a.click();
     
-    // Cleanup
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
-// 9. Auto-Format Code Function
+// Auto-Format Code (Prettier)
 function formatCode() {
     if (myEditor) {
-        // Monaco Editor ka inbuilt formatter action call karna
         myEditor.getAction('editor.action.formatDocument').run();
     }
 }
 
-// 10. Font Size Adjuster (Zoom In/Out)
-let currentFontSize = 14; // Default Monaco font size
-
+// Font Size Adjuster (Zoom In/Out)
+let currentFontSize = 16;
 function changeFontSize(step) {
     if (myEditor) {
         currentFontSize += step;
-        
-        // Limits set kar rahe hain taaki font bohot chhota ya bohot bada na ho jaye
         if (currentFontSize < 8) currentFontSize = 8;
         if (currentFontSize > 40) currentFontSize = 40;
-        
-        // Editor ko naye font size ke sath update karna
         myEditor.updateOptions({ fontSize: currentFontSize });
     }
 }
 
-// 11. Light/Dark Theme Switcher
+// Light/Dark Theme Switcher
 let isDarkMode = true;
-
 function toggleTheme() {
     isDarkMode = !isDarkMode;
     const themeBtn = document.getElementById('theme-btn');
     
     if (isDarkMode) {
-        // Wapas Dark Mode
         document.body.classList.remove('light-mode');
-        monaco.editor.setTheme('vs-dark'); // Monaco dark theme
-        themeBtn.innerText = '☀️';
+        monaco.editor.setTheme('vs-dark'); 
+        if(themeBtn) themeBtn.innerText = '☀️';
     } else {
-        // Light Mode ON
         document.body.classList.add('light-mode');
-        monaco.editor.setTheme('vs'); // Monaco light theme
-        themeBtn.innerText = '🌙';
+        monaco.editor.setTheme('vs'); 
+        if(themeBtn) themeBtn.innerText = '🌙';
     }
 }
 
-// 12. Clear Output Function
+// Clear Output & AI Analysis
 function clearOutput() {
-    // Apne output aur AI div ki exact IDs check kar lena agar alag ho toh
-    const outputScreen = document.getElementById('output'); 
-    const aiAnalysis = document.getElementById('ai-response'); // Ya jo bhi aapki AI output container ki ID hai
+    const execOutputBox = document.getElementById('execution-output') || document.getElementById('output');
+    const aiAnalysis = document.getElementById('ai-response-content') || document.getElementById('ai-response');
     
-    if (outputScreen) {
-        outputScreen.innerHTML = "Output cleared. Ready for next execution...";
-        outputScreen.style.color = "#888"; // Optional: grey color for placeholder
+    if (execOutputBox) {
+        execOutputBox.innerHTML = "Output cleared. Ready for next execution...";
+        execOutputBox.style.color = "#888"; 
     }
     
     if (aiAnalysis) {

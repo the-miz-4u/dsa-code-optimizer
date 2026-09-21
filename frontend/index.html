@@ -26,8 +26,14 @@
                 <button onclick="changeFontSize(-1)" style="margin-left: 5px; padding: 8px 10px;" class="secondary-btn">A-</button>
                 <button id="theme-btn" onclick="toggleTheme()" style="margin-left: 10px; padding: 8px 10px;" class="secondary-btn">☀️</button>
                 <button onclick="clearOutput()" style="margin-left: 10px; padding: 8px 10px;" class="secondary-btn" title="Clear Output">🗑️</button>
+
                 
-                <button id="run-btn" onclick="runCode()">Run & Optimize</button>
+            <label style="margin-left: 15px; cursor: pointer; display: inline-flex; align-items: center; font-weight: bold;" title="Turn ON for hints only, OFF for full code">
+                <input type="checkbox" id="hint-mode" checked style="margin-right: 5px; cursor: pointer; width: 16px; height: 16px;">
+                🤖 Hint Mode
+            </label>
+            
+            <button id="run-btn" onclick="runCode()" style="margin-left: 15px;">Run & Optimize</button>
             </div>
     
     <!-- Main Layout (Split Screen 60-40) -->
