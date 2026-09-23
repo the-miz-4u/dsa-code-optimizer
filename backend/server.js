@@ -81,9 +81,11 @@ const executeCode = (code, language) => {
     });
 };
 
-// Endpoint for Code Optimization
+
+// Endpoint for Code Optimization (Updated for Hint Mode)
 app.post('/api/optimize', async (req, res) => {
-    const { code, language } = req.body;
+    // Yahan humne 'customPrompt' ko bhi receive kiya
+    const { code, language, customPrompt } = req.body;
 
     // Agar editor khali hai ya code nahi aaya
     if (!code) {
@@ -92,30 +94,32 @@ app.post('/api/optimize', async (req, res) => {
 
     try {
         console.log(`Executing ${language} code locally...`);
-        const executionResult = await executeCode(code, req.body.language);
+        const executionResult = await executeCode(code, language);
 
         console.log(`Analyzing ${language} code...`);
 
         // Gemini Model Initialize karna
-        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" }); 
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Note: API limit issues avoid karne ke liye model version correct rakha hai
         
-        // Prompt Engineering: AI ko batana hai ki use kya aur kaise respond karna hai
-        const prompt = `
-        You are an expert Data Structures and Algorithms (DSA) mentor.
-        Analyze the following ${language} code and provide the output strictly in this format:
-
-        **1. Time Complexity:** Explain the Big-O time complexity.
-        **2. Space Complexity:** Explain the Big-O space complexity.
-        **3. Optimization Suggestions:** If the code can be optimized (e.g., from O(N^2) to O(N log N)), provide the logic. If it is already optimal, mention that.
+        // --- YAHAAN CHANGE KIYA HAI ---
+        // Agar frontend se customPrompt aaya hai toh usko use karo, warna fallback prompt use karo.
+        let promptToUse = customPrompt;
         
-        Do not provide the full rewritten code yet, just the explanation.
-        
-        Code:
-        ${code}
-        `;
+        if (!promptToUse) {
+             promptToUse = `
+             You are an expert Data Structures and Algorithms (DSA) mentor.
+             Analyze the following ${language} code and provide the output strictly in this format:
+             **1. Time Complexity:** Explain the Big-O time complexity.
+             **2. Space Complexity:** Explain the Big-O space complexity.
+             **3. Optimization Suggestions:** If the code can be optimized, provide the logic.
+             Code:
+             ${code}
+             `;
+        }
+        // -------------------------------
 
         // AI se response generate karwana
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(promptToUse);
         const aiResponse = result.response.text();
 
         console.log("AI Analysis Complete!");
@@ -124,7 +128,7 @@ app.post('/api/optimize', async (req, res) => {
         res.json({
             success: true,
             analysis: aiResponse,
-            execution: executionResult // <-- Yahan comma lagana zaroori tha
+            execution: executionResult 
         });
 
     } catch (error) {
@@ -135,6 +139,9 @@ app.post('/api/optimize', async (req, res) => {
         });
     }
 });
+
+
+
 // AI Mentor Chat Endpoint
 app.post('/api/chat', async (req, res) => {
     const { code, question, language } = req.body;
